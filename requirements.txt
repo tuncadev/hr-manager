@@ -1,0 +1,17 @@
+streamlit
+python-docx
+chardet
+docx
+pdfminer.six
+crewai
+PyYAML
+db-sqlite3
+streamlit
+pysqlite3-binary
+gspread
+oauth2client
+uuid
+pandas
+PyMuPDF
+python-dotenv
+cryptography
