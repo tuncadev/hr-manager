@@ -1,3 +1,5 @@
+import os
+
 from cryptography.fernet import Fernet
 from dotenv import set_key, find_dotenv
 
@@ -13,8 +15,16 @@ class EncryptionManager:
             self.key_str = self.key.decode()
 
             # Set the encryption key in the .env file
-            env_path = "env/.data"
-            set_key(env_path, f"{self.applicant_key}", self.key_str)
+            env_path = "env"
+            file_path = "env/.data"
+            # Create the folder if it doesn't exist
+            if not os.path.exists(env_path):
+                os.makedirs(env_path)
+            # Create the file if it doesn't exist
+            if not os.path.exists(env_path):
+                open(file_path, 'w').close()
+
+            set_key(file_path, f"{self.applicant_key}", self.key_str)
 
         self.cipher_suite = Fernet(self.key)
 
