@@ -65,7 +65,7 @@ class GetAgentData:
             allow_delegation=agent_details['allow_delegation'],
             verbose=agent_details['verbose'],
             llm=ChatOpenAI(
-                model_name="gpt-4",
+                model_name="gpt-3.5-turbo-0125",
                 temperature=0.5
             )
         )
@@ -96,7 +96,7 @@ class GetAgentData:
             allow_delegation=agent_details['allow_delegation'],
             verbose=agent_details['verbose'],
             llm=ChatOpenAI(
-                model_name="gpt-4",
+                model_name="gpt-3.5-turbo-0125",
                 temperature=0.2
             )
         )
@@ -127,7 +127,7 @@ class GetAgentData:
             allow_delegation=agent_details['allow_delegation'],
             verbose=agent_details['verbose'],
             llm=ChatOpenAI(
-                model_name="gpt-4",
+                model_name="gpt-3.5-turbo-0125",
                 temperature=0.3
             )
         )

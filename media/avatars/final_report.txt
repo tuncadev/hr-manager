@@ -1,0 +1,13 @@
+The candidate, Lesia Okseniuk, has a solid background in Manual QA, with a deep understanding of SDLC and STLC, testing types, and test design techniques. Her proficiency in Jira and experience in API testing using Postman are strong assets that align well with the job requirements. She has also demonstrated experience in a Scrum team and Agile concepts, which is a crucial aspect of the role. 
+
+However, there are areas where the candidate's qualifications do not fully meet the job requirements. While she has basic SQL knowledge, she lacks extensive experience with SQL. Similarly, her understanding of REST API is not explicitly detailed in her resume or interview responses. 
+
+In terms of additional skills, she confirmed having experience with CLI and Azure during the interview, which are a plus for the role, even though these were not mentioned in her resume. However, she lacks understanding of microservice architecture, which was listed as a desirable skill for the role. 
+
+In terms of language proficiency, she claims to have an Upper-Intermediate level of English, and confirmed in the interview that she has English language courses, diplomas, or certificates, which is a requirement for the role. 
+
+In terms of availability, the candidate is ready to join work immediately, which is a positive aspect. She also confirmed her ability to work during power outages and willingness to provide HR contacts from previous workplaces for recommendations. 
+
+However, her LinkedIn profile is not included in the provided CV file, which could have provided additional information about her professional background and endorsements from colleagues or supervisors. 
+
+In conclusion, considering all the requirements for the QA Engineer position and the candidate's qualifications and interview responses, I would rate the candidate's suitability for the role at approximately 75%. While she meets many of the core requirements, there are areas where her experience and skills could be further developed to fully meet the job requirements.
