@@ -2,3 +2,4 @@
 showSidebarNavigation = false
 [theme]
 base="dark"
+layout="centered"

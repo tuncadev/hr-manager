@@ -1,6 +1,5 @@
 import streamlit as fw
-
-
+from datetime import datetime
 # Tools
 from tools.db_connect import DBConnect
 # Utils
@@ -13,6 +12,18 @@ def run():
     questions = fw.session_state['questions']
     applicant_key = responses['applicant_key']
     name = responses['name']
+    # Time container
+    start = fw.session_state['app_start']
+    passed = datetime.now() - start
+    with fw.container(border=True):
+        col_left, col_right = fw.columns([4, 1])  # Use columns(2) to create two columns
+        with col_left:
+            fw.write(f"Your interview started at:")
+            fw.write(start)  # Use start_time instead of start
+        with col_right:
+            fw.write(f"Time spent in interview so far:")
+            fw.write(passed)  # Use start_time instead of start
+    # The rest
     num_questions = len(questions)
     answers = fw.session_state.get('answers', [''] * num_questions)
     assistant_msg = fw.chat_message("assistant")
@@ -63,3 +74,4 @@ if __name__ == "__main__":
         msg = fw.chat_message("assistant", avatar=get_assistant_avatar("error.png"))
         with msg:
             fw.write("You cannot access this page directly....")
+        fw.page_link("app.py", label="Home", icon="🏠")

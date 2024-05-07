@@ -35,7 +35,7 @@ def run():
                                                                   questions_answers=questions_answers)
             final_report = human_resources_director_task.execute()
             db.insert_into_reports(applicant_key=applicant_key, report_table="final_report", content=final_report)
-            fw.switch_page("pages/results.py")
+            fw.switch_page("pages/success.py")
 
 
 if __name__ == "__main__":
@@ -45,3 +45,4 @@ if __name__ == "__main__":
         msg = fw.chat_message("assistant", avatar=get_assistant_avatar("error.png"))
         with msg:
             fw.write("You cannot access this page directly....")
+        fw.page_link("app.py", label="Home", icon="🏠")

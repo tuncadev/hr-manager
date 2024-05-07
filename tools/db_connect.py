@@ -115,14 +115,12 @@ class DBConnect:
     def select_from_resumes(self, applicant_key=None):
         env_vars = dotenv_values('env/.data')
         key = env_vars.get(f'{applicant_key}')
-        print(key)
         encryption_manager = EncryptionManager(applicant_key=applicant_key, key=key)
         query = f"SELECT content FROM resumes WHERE applicant_key = '{applicant_key}'"
         self.c.execute(query)
         # Fetch the results if needed
         # Fetch the results if needed
         result = self.c.fetchone()
-        print(type(result))
         if result:
             content = result[0]  # Extract the content from the tuple
             decrypted_text = encryption_manager.decrypt_data(content)

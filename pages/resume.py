@@ -63,3 +63,4 @@ if __name__ == "__main__":
         msg = fw.chat_message("assistant", avatar=get_assistant_avatar("error.png"))
         with msg:
             fw.write("You cannot access this page directly....")
+        fw.page_link("app.py", label="Home", icon="🏠")
