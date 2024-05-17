@@ -188,5 +188,4 @@ fabric.properties
 
 # Streamlit secrets
 streamlit/*
-db/
-db/*
+.streamlit/*
