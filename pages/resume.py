@@ -51,7 +51,7 @@ def run():
                         if formatter:
                             formatter_task = task_data.return_task("Document Expert", agent_instance=formatter, res=cv_contents)
                             new_resume = formatter_task.execute()
-                            fw.write(new_resume)
+                            # fw.write(new_resume)
                            # print(new_resume)
                             db.insert_into_resumes(applicant_id=applicant_id, content=new_resume)
                             fw.switch_page("pages/hr-manager.py")
