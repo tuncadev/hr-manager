@@ -4,13 +4,13 @@ from cryptography.fernet import Fernet
 from dotenv import set_key, find_dotenv
 
 class EncryptionManager:
-    def __init__(self, applicant_key, key=None):
+    def __init__(self, applicant_id, key=None):
         # Generate a key for encryption and decryption
         if key:
             self.key = key
         else:
             self.key = Fernet.generate_key()
-            self.applicant_key = applicant_key
+            self.applicant_key = applicant_id
             # Convert the key to a string for storing in the .env file
             self.key_str = self.key.decode()
 
@@ -39,11 +39,3 @@ class EncryptionManager:
         decrypted_data = self.cipher_suite.decrypt(encrypted_data).decode()
         return decrypted_data
 
-"""# Example usage
-encryption_manager = EncryptionManager()
-encrypted_text = encryption_manager.encrypt_data("Hello, world!")
-print("Encrypted:", encrypted_text)
-
-decrypted_text = encryption_manager.decrypt_data(encrypted_text)
-print("Decrypted:", decrypted_text)
-"""

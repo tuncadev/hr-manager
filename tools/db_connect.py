@@ -1,15 +1,15 @@
 import os
-import random
-import string
 import sqlite3
 from dotenv import dotenv_values
-
-from tools.encryption_manager import EncryptionManager
+import streamlit as fw
 from tools import encryption_manager
+from tools.encryption_manager import EncryptionManager
+
+
 
 class DBConnect:
 
-    def __init__(self, db_name='hmdb.sqlite', db_folder='db'):
+    def __init__(self, db_name='hmdbq.sqlite', db_folder='db'):
         current_dir = os.path.dirname(
             os.path.abspath(__file__))  # Get the directory of the current
         project_dir = os.path.dirname(current_dir)  # Get the parent app directory
@@ -26,26 +26,6 @@ class DBConnect:
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.conn:
             self.conn.close()
-
-    # Generate a random key for each applicant
-    @staticmethod
-    def get_random_string(length):
-        letters = string.ascii_letters + string.digits
-        return ''.join(random.choice(letters) for i in range(length))
-
-    # Insert into DB new applicant details
-    def create_temp(self, name, email, selected_vac_name, selected_vac_details):
-        while True:
-            applicant_key = self.get_random_string(10)  # Generate a 10-character random string
-            self.c.execute("SELECT applicant_key FROM applicants WHERE applicant_key = ?", (applicant_key,))
-            existing_folder = self.c.fetchone()
-            if existing_folder is None or not existing_folder:
-                break  # Exit the loop if the folder name is unique or if there are no records
-        self.c.execute("INSERT INTO applicants (applicant_key, name, email, selected_vac_name, selected_vac_details) VALUES (?, ?, ?, ?, ?)",
-                       (applicant_key, name, email, selected_vac_name, selected_vac_details))
-        self.conn.commit()
-        return applicant_key
-
 
     # Connections for Vacancies
     def is_vacancies_table_empty(self):
@@ -105,31 +85,57 @@ class DBConnect:
         column_names = [header[1] for header in headers]
         return column_names
 
-    def insert_into_resumes(self, applicant_key=None, content=None):
-        encryption_manager = EncryptionManager(applicant_key=applicant_key)
+    # App connections for applicant
+    def create_applicant(self, applicant_key, name, email, selected_vac_name, selected_vac_details, start, end=None, last_page=None):
+        while True:
+            self.c.execute("SELECT applicant_key FROM applicants WHERE applicant_key = ?", (applicant_key,))
+            existing_folder = self.c.fetchone()
+            if existing_folder is None or not existing_folder:
+                break  # Exit the loop if the folder name is unique or if there are no records
+        self.c.execute(
+            "INSERT INTO applicants (applicant_key, name, email, selected_vac_name, selected_vac_details, start, end, last_page) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (applicant_key, name, email, selected_vac_name, selected_vac_details, start, end,  last_page))
+        self.conn.commit()
+        return self.c.lastrowid
+
+    def update_table(self, table_name, applicant_id, columns):
+        if columns:
+            if table_name == "applicants":
+                where = "id"
+            else:
+                where = "applicant_id"
+            set_clause = ', '.join([f"{column} = ?" for column in columns.keys()])
+            query = f"UPDATE {table_name} SET {set_clause} WHERE {where} = ?"
+            values = list(columns.values()) + [applicant_id]
+            self.c.execute(query, values)
+            self.conn.commit()
+
+    def insert_into_resumes(self, applicant_id=None, content=None):
+        encryption_manager = EncryptionManager(applicant_id=applicant_id)
         encrypted_text = encryption_manager.encrypt_data(content)
         # Insert into DB CV content
-        self.c.execute("INSERT INTO resumes (applicant_key, content) VALUES (?, ?)", (applicant_key, encrypted_text))
+        self.c.execute("INSERT INTO resumes (applicant_id, content) VALUES (?, ?)", (applicant_id, encrypted_text))
         self.conn.commit()
 
-    def select_from_resumes(self, applicant_key=None):
-        env_vars = dotenv_values('env/.data')
-        key = env_vars.get(f'{applicant_key}')
-        encryption_manager = EncryptionManager(applicant_key=applicant_key, key=key)
-        query = f"SELECT content FROM resumes WHERE applicant_key = '{applicant_key}'"
+    def select_from_resumes(self, applicant_id=None):
+        query = f"SELECT content FROM resumes WHERE applicant_id = '{applicant_id}'"
         self.c.execute(query)
-        # Fetch the results if needed
-        # Fetch the results if needed
         result = self.c.fetchone()
-        if result:
+        if result is not None and result[0] is not None:
+            env_vars = dotenv_values('env/.data')
+            key = env_vars.get(f'{applicant_id}')
+            encryption_manager = EncryptionManager(applicant_id=applicant_id, key=f"{key}")
             content = result[0]  # Extract the content from the tuple
             decrypted_text = encryption_manager.decrypt_data(content)
-            return "\n".join(decrypted_text)  # Return the fetched result
-        self.conn.commit()
+            self.conn.commit()
+            return decrypted_text  # Return the fetched result
+        else:
+            self.conn.commit()
+            return False
 
-    def select_from_analysis(self, applicant_key=None, table_name=None):
-        query = f"SELECT content FROM {table_name} WHERE applicant_key = ?"
-        self.c.execute(query, (applicant_key,))
+    def select_from_analysis(self, applicant_id=None, table_name=None):
+        query = f"SELECT content FROM {table_name} WHERE applicant_id = ?"
+        self.c.execute(query, (applicant_id,))
         # Fetch the results if needed
         result = self.c.fetchone()
         self.conn.commit()
@@ -138,30 +144,58 @@ class DBConnect:
         else:
             return None  # Return None if no result is found
 
-    def get_selected_vac_details(self, applicant_key=None):
-        self.c.execute("SELECT selected_vac_details FROM applicants WHERE applicant_key=?", (applicant_key,))
+    def get_selected_vac_details(self, applicant_id=None):
+        self.c.execute("SELECT selected_vac_details FROM applicants WHERE id=?", (applicant_id,))
         vacancy_details = self.c.fetchone()
         self.conn.commit()
         return vacancy_details
 
-    def insert_into_reports(self, applicant_key=None, report_table=None, content=None):
-        query = f"INSERT INTO {report_table} (applicant_key, content) VALUES (?, ?)"
-        self.c.execute(query, (applicant_key, content))
+    def insert_into_reports(self, applicant_id=None, report_table=None, content=None):
+        query = f"INSERT INTO {report_table} (applicant_id, content) VALUES (?, ?)"
+        self.c.execute(query, (applicant_id, content))
         self.conn.commit()
 
-    def get_applicant_name(self, applicant_key=None):
-        self.c.execute("SELECT name FROM applicants WHERE applicant_key=?", (applicant_key,))
+    def get_applicant_name(self, applicant_id=None):
+        self.c.execute("SELECT name FROM applicants WHERE id=?", (applicant_id,))
         applicant_name = self.c.fetchone()
         self.conn.commit()
         return applicant_name
 
-    def custom_query(self,folder_name=None, query=None):
-        self.c.execute("SELECT id FROM folders WHERE folder_name = ?", (folder_name,))
-        folder_id = self.c.fetchone()[0]
-        if query:
-            self.c.execute(query)
-            result = self.c.fetchone()
-            return result
-        else:
-            return "No results found"
+    def get_lastpage(self, applicant_key=None):
+        if applicant_key is None:
+            return None
+        self.c.execute("SELECT last_page FROM applicants WHERE applicant_key=?", (applicant_key,))
+        last_page = self.c.fetchone()
+        self.conn.commit()
+        return last_page
 
+    def get_applicant_details(self, applicant_id=None):
+        if applicant_id is None:
+            return None
+        self.c.execute("SELECT * FROM applicants WHERE id=? ", (applicant_id,))
+        row = self.c.fetchone()
+
+        if row is not None:
+            # Get column names from the cursor's description
+            columns = [column[0] for column in self.c.description]
+            # Construct result dictionary with non-empty values
+            result_dict = {columns[i]: row[i] for i in range(len(columns)) if row[i] is not None}
+            return result_dict
+
+        self.conn.commit()
+        return None
+
+    def get_applicant_continue_details(self, applicant_key=None):
+        if applicant_key is None:
+            return None
+        self.c.execute("SELECT * FROM applicants WHERE applicant_key=? ", (applicant_key,))
+        row = self.c.fetchone()
+        if row is not None:
+            # Get column names from the cursor's description
+            columns = [column[0] for column in self.c.description]
+            # Construct result dictionary with non-empty values
+            result_dict = {columns[i]: row[i] for i in range(len(columns)) if row[i] is not None}
+            return result_dict
+
+        self.conn.commit()
+        return None

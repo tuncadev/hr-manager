@@ -27,5 +27,3 @@ run.font.size = Pt(12)  # Font size in points
 
 # Save the document
 doc.save('example.docx')
-
-print('DOCX created: example.docx')

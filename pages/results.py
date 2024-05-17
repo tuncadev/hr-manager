@@ -3,19 +3,17 @@ import time
 import streamlit as fw
 
 # Tools
-from tools.db_connect import DBConnect
+
 # Utils
-from utils.globals import get_assistant_avatar
+from utils.globals import get_static_image
 from utils.globals import check_and_delete_temp_files
 
 
 def run():
     # Defaults
-    responses = fw.session_state['responses']
-    applicant_key = responses['applicant_key']
     with fw.spinner("Retrieving results..."):
         app_base_path = os.getcwd()
-        temp_dir = os.path.join(app_base_path, "temp")
+        temp_dir = os.path.join(app_base_path, "static/temp")
         with open(os.path.join(temp_dir, "first_analysis.txt"), "r") as fa, \
              open(os.path.join(temp_dir, "questions_answers.txt"), "r") as qa, \
              open(os.path.join(temp_dir, "final_report.txt"), "r") as fr, \
@@ -49,13 +47,14 @@ def run():
         # Clear the links from the UI
         timer_placeholder.empty()
         fw.empty()
+        fw.page_link("app.py", label="Home", icon="🏠")
 
 
 if __name__ == "__main__":
     if "responses" in fw.session_state:
         run()
     else:
-        msg = fw.chat_message("assistant", avatar=get_assistant_avatar("error.png"))
+        msg = fw.chat_message("assistant", avatar=get_static_image(folder="avatar", filename="error.png"))
         with msg:
             fw.write("You cannot access this page directly....")
         fw.page_link("app.py", label="Home", icon="🏠")

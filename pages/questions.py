@@ -1,16 +1,26 @@
+import json
+
 import streamlit as fw
 from datetime import datetime
 # Tools
 from tools.db_connect import DBConnect
 # Utils
-from utils.globals import get_assistant_avatar
+from utils.globals import get_static_image
+from utils.globals import get_sidebar
 
 
 def run():
+    fw.session_state["status"] = 60
+    # Sidebar content
+    get_sidebar(step=4)
     # Defaults
     responses = fw.session_state['responses']
-    questions = fw.session_state['questions']
-    applicant_key = responses['applicant_key']
+    applicant_id = responses["applicant_id"]
+    with DBConnect() as db:
+        db.update_table(table_name="applicants", applicant_id=applicant_id, columns={'last_page': 'questions'})
+        questions_from_db = db.select_from_analysis(applicant_id=applicant_id, table_name="questions")
+        questions_json = json.loads(questions_from_db)
+        questions = questions_json.get('questions', [])
     name = responses['name']
     # Time container
     start = fw.session_state['app_start']
@@ -61,17 +71,18 @@ def run():
                             qa = f"Question: {q}\nAnswer: {a}\n"
                             questions_answers.append(qa)
                         responses["questions_answers"] = questions_answers
-                        db.insert_into_reports(applicant_key=applicant_key, report_table="questions_answers", content="\n".join(questions_answers))
+                        db.insert_into_reports(applicant_id=applicant_id, report_table="questions_answers", content="\n".join(questions_answers))
+                        fw.session_state["questions"] = True
                         fw.switch_page("pages/analysis.py")
                 else:
                     fw.warning("Please the answer all questions before proceeding.")
 
 
 if __name__ == "__main__":
-    if "responses" in fw.session_state:
+    if "responses" in fw.session_state and "questions" not in fw.session_state:
         run()
     else:
-        msg = fw.chat_message("assistant", avatar=get_assistant_avatar("error.png"))
+        msg = fw.chat_message("assistant", avatar=get_static_image(folder="avatar", filename="error.png"))
         with msg:
-            fw.write("You cannot access this page directly....")
+            fw.write("You cannot access or go back to this page directly....")
         fw.page_link("app.py", label="Home", icon="🏠")
