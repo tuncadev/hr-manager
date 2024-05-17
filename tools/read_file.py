@@ -2,7 +2,6 @@ import io
 
 import PyPDF2
 from docx import Document
-from pdfminer.high_level import extract_text
 import chardet
 
 
