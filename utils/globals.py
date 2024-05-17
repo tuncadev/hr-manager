@@ -37,7 +37,7 @@ def check_uploaded_file(file):
         cv_content = readfile.read_txt_file()
     elif file_name.endswith('.pdf'):
         readfile = ReadFileContents(file_name, file_content)
-        cv_content = readfile.read_pdf_file()
+        cv_content = readfile.read_pdf_file(file_content)
     else:
         cv_content = "Unsupported file type"
     return cv_content

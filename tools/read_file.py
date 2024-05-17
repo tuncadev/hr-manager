@@ -1,4 +1,6 @@
 import io
+
+import PyPDF2
 from docx import Document
 from pdfminer.high_level import extract_text
 import chardet
@@ -56,8 +58,20 @@ class ReadFileContents:
                                 return "Error: File content is not readable."
         return text
 
-    def read_pdf_file(self):
-        return extract_text(io.BytesIO(self.file_content))
+   # def read_pdf_file(self):
+    #    return extract_text(io.BytesIO(self.file_content))
+
+    def read_pdf_file(self, file_content):
+        # Since 'file_content' is already a byte stream from Streamlit
+        pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_content))
+
+        # Extract text from all pages
+        text = ""
+        for page_num in range(len(pdf_reader.pages)):
+            page = pdf_reader.pages[page_num]
+            text += page.extract_text()
+
+        return text
 
     def check_for_binary_data(self):
         if self.file_content:

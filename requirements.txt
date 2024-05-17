@@ -16,5 +16,5 @@ PyMuPDF
 python-dotenv
 cryptography
 bcrypt
-pdfminer
 panda
+PyPDF2
