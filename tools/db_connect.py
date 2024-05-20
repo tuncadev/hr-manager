@@ -1,10 +1,10 @@
 import os
 import sqlite3
+import streamlit as st
+from IPython.display import display
 from dotenv import dotenv_values
-import streamlit as fw
-from tools import encryption_manager
 from tools.encryption_manager import EncryptionManager
-
+import pandas as pd
 
 
 class DBConnect:
@@ -85,7 +85,56 @@ class DBConnect:
         column_names = [header[1] for header in headers]
         return column_names
 
-    # App connections for applicant
+    # App connections for applicants
+
+    def select_from(self, table_name=None):
+        """Fetches data from a table as a pandas DataFrame."""
+        try:
+            query = f"SELECT * FROM {table_name}"
+            self.c.execute(query)
+            data = self.c.fetchall()
+            df = pd.DataFrame(data, columns=[col[0] for col in self.c.description])
+            return df
+        except sqlite3.Error as error:
+            st.error(f"Error connecting to database: {error}")
+            return None
+
+    def get_formatted_table_names(self):
+        """Fetches all table names and returns them formatted."""
+        try:
+            # Retrieve all table names
+            self.c.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            tables = self.c.fetchall()
+
+            # Format table names
+            formatted_table_names = []
+            for table in tables:
+                original_name = table[0]
+                formatted_name = original_name.replace('_', ' ').title()
+                formatted_table_names.append((formatted_name, original_name))  # Keep both formatted and original names
+
+            return formatted_table_names
+        except sqlite3.Error as error:
+            st.error(f"Error connecting to database: {error}")
+            return None
+
+
+    def get_resumes_with_names(self):
+        """Fetches resumes with applicant names"""
+        try:
+            query = """
+              SELECT r.applicant_id, a.name, r.content
+              FROM resumes r
+              INNER JOIN applicants a ON r.applicant_id = a.id
+            """
+            self.c.execute(query)
+            data = self.c.fetchall()
+            df = pd.DataFrame(data, columns=["applicant_id", "applicant_name", "content"])
+            return df
+        except sqlite3.Error as error:
+            print("Error connecting to database:", error)
+            return None  # Or handle error differently
+
     def create_applicant(self, applicant_key, name, email, selected_vac_name, selected_vac_details, start, end=None, last_page=None):
         while True:
             self.c.execute("SELECT applicant_key FROM applicants WHERE applicant_key = ?", (applicant_key,))
@@ -112,7 +161,8 @@ class DBConnect:
 
     def insert_into_resumes(self, applicant_id=None, content=None):
         encryption_manager = EncryptionManager(applicant_id=applicant_id)
-        encrypted_text = encryption_manager.encrypt_data(content)
+        # encrypted_text = encryption_manager.encrypt_data(content)
+        encrypted_text = content
         # Insert into DB CV content
         self.c.execute("INSERT INTO resumes (applicant_id, content) VALUES (?, ?)", (applicant_id, encrypted_text))
         self.conn.commit()
@@ -122,13 +172,14 @@ class DBConnect:
         self.c.execute(query)
         result = self.c.fetchone()
         if result is not None and result[0] is not None:
-            env_vars = dotenv_values('env/.data')
-            key = env_vars.get(f'{applicant_id}')
-            encryption_manager = EncryptionManager(applicant_id=applicant_id, key=f"{key}")
-            content = result[0]  # Extract the content from the tuple
-            decrypted_text = encryption_manager.decrypt_data(content)
+            # env_vars = dotenv_values('env/.data')
+            # key = env_vars.get(f'{applicant_id}')
+            # encryption_manager = EncryptionManager(applicant_id=applicant_id, key=f"{key}")
+            # content = result[0]  # Extract the content from the tuple
+            # decrypted_text = encryption_manager.decrypt_data(content)
             self.conn.commit()
-            return decrypted_text  # Return the fetched result
+            # return decrypted_text  # Return the fetched result
+            return result[0]
         else:
             self.conn.commit()
             return False

@@ -57,7 +57,6 @@ if __name__ == "__main__":
             fw.header(divider="blue", anchor=False, body="Human Resources Assistant")
         container = fw.container(border=True)
         with container:
-
             col_left, col_center, col_right = fw.columns([1.5, 1.2, 2],  gap="small")
             with col_left:
                 assistant = fw.chat_message("assistant")
@@ -76,3 +75,6 @@ if __name__ == "__main__":
         if continue_application:
             css_placeholder.empty()
             fw.switch_page("pages/continue.py")
+        footer = fw.container(border=True)
+        with footer:
+            fw.page_link(label="Developers Only", page="pages/test.py", icon="🌀")

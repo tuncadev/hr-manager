@@ -1,5 +1,4 @@
 import os
-
 from cryptography.fernet import Fernet
 from dotenv import set_key, find_dotenv
 
