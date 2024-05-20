@@ -77,4 +77,8 @@ if __name__ == "__main__":
             fw.switch_page("pages/continue.py")
         footer = fw.container(border=True)
         with footer:
-            fw.page_link(label="Developers Only", page="pages/test.py", icon="🌀")
+            dev = fw.button(label="🌀 Developers Only")
+            if dev:
+                responses = {}
+                fw.session_state['responses'] = responses
+                fw.switch_page("pages/test.py")
