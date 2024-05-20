@@ -19,8 +19,11 @@ def are_all_fields_filled(responses):
 def check_and_delete_temp_files():
     temp_dir = "static/temp"
     for file_name in os.listdir(temp_dir):
+        if file_name == ".gitignore":
+            continue
         file_path = os.path.join(temp_dir, file_name)
-        os.remove(file_path)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
 
 
 def check_uploaded_file(file):
