@@ -42,7 +42,7 @@ def run():
         st.session_state.selected_table = None
 
     with st.sidebar:
-        st.button("Go Home Yankee", key="home")
+        st.page_link("app.py", label="Home", icon="🏠")
         clear_data = st.button("Clear .DATA")
         read_data = st.button("Read .DATA")
         view_db = st.button("View Database")
