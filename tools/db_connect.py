@@ -1,7 +1,6 @@
 import os
 import sqlite3
 import streamlit as st
-from IPython.display import display
 from dotenv import dotenv_values
 from tools.encryption_manager import EncryptionManager
 import pandas as pd
