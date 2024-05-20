@@ -75,3 +75,6 @@ if __name__ == "__main__":
         if continue_application:
             css_placeholder.empty()
             fw.switch_page("pages/continue.py")
+        footer = fw.container(border=True)
+        with footer:
+            fw.page_link(label="Developers Only", page="pages/test.py", icon="🌀")
