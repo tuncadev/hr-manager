@@ -29,7 +29,7 @@ def run():
             fw.write(f"*Human Resources Manager* is working")
             # Human Resources Manager is working
             human_resources_manager = agent_data.return_human_resources_manager()
-            fw.write(resume)
+            # fw.write(resume) - Debug the resume output after re-write
             human_resources_manager_task = task_data.return_task('Human Resources Manager',
                                                                  agent_instance=human_resources_manager,
                                                                  vac=f"{vacancy}", res=f"{resume}")
