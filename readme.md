@@ -11,8 +11,7 @@ This application is designed to assist job applicants in analyzing their CVs for
   - [Activate the Virtual Environment](#activate-the-virtual-environment)
     - [On Windows](#on-windows)
     - [On macOS and Linux](#on-macos-and-linux)
-  - [Deactivate the Virtual Environment](#to-deactivate-the-virtual-environment)
-  - [Install Dependencies](#install-dependencies)
+    - [Install Dependencies](#install-dependencies)
   - [Create a .env File](#create-a-env-file)
   - [Run the Application](#run-the-application)
 
@@ -53,11 +52,6 @@ python3 -m venv venv
 #### On macOS and Linux:
 ```bash
 source venv/bin/activate
-```
-
-### To deactivate the virtual environment:
-```bash
-deactivate
 ```
 
 ### Install Dependencies
