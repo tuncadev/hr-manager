@@ -15,7 +15,7 @@ class GetAgentData:
             sheet_id = '1vmcwKyoDp3quMJO99FuuY6Et9m_MPfsfmzeVK-nlGT4'  # replace with your sheet's ID
             # OpenAI Environment
             openai_api = os.getenv("OPENAI_API_KEY")
-            os.environ["OPENAI_API_KEY"] = str(openai_api)
+            os.environ["OPENAI_API_KEY"] = openai_api
             url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
             self.data = pd.read_csv(url).fillna('Unknown')
         except Exception as error:

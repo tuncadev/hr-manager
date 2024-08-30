@@ -125,3 +125,20 @@ def set_page_config(page_title, page_icon=None, layout=None, initial_sidebar_sta
         initial_sidebar_state=initial_sidebar_state,
         menu_items=menu_items
     )
+
+
+def hide_key(key, visible_start=5, visible_end=5):
+    """
+    Hide the middle part of the key with asterisks.
+
+    :param key: The original key string.
+    :param visible_start: Number of characters to show at the start.
+    :param visible_end: Number of characters to show at the end.
+    :return: The key with the middle part hidden by asterisks.
+    """
+    if len(key) <= visible_start + visible_end:
+        # If the key is too short to hide anything, return it as is.
+        return key
+
+    hidden_part = '*' * (len(key) - visible_start - visible_end)
+    return key[:visible_start] + hidden_part + key[-visible_end:]

@@ -13,7 +13,7 @@ from tools.get_agents import GetAgentData
 from utils.globals import get_static_image
 from utils.globals import check_uploaded_file
 from utils.globals import get_sidebar
-
+from utils.globals import hide_key
 
 def run():
     fw.session_state["status"] = 20
@@ -24,6 +24,9 @@ def run():
     continue_application = responses["continue"]
     applicant_key = responses["applicant_key"]
     if not continue_application:
+        openaikey = openai_api = os.getenv("OPENAI_API_KEY")
+        hiddenKey = hide_key(key=openaikey)
+        fw.write(f"Type: {type(openaikey)} | | KEY: {hiddenKey}")
         with fw.spinner("Your resume is being analyzed. Please wait..."):
             with DBConnect() as db:
                 name = responses["name"]
