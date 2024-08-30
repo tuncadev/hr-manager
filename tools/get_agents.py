@@ -240,3 +240,4 @@ class GetAgentData:
             self.logger.log_error_from_exception(applicant_id=1, applicant_ip='127.0.0.1', page='test_page', exception=e)
 
 
+
